@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Click Game</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        canvas {
+            background-color: #f0f0f0;
+            border: 2px solid #333;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Score: <span id="score">0</span></h1>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score');
+
+        let score = 0;
+        let squareSize = 40;
+        // Initial position
+        let x = 180;
+        let y = 180;
+
+        function drawGame() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw red square
+            ctx.fillStyle = 'red';
+            ctx.fillRect(x, y, squareSize, squareSize);
+        }
+
+        function moveSquare() {
+            // Randomly pick new spot within boundaries
+            x = Math.random() * (canvas.width - squareSize);
+            y = Math.random() * (canvas.height - squareSize);
+            drawGame();
+        }
+
+        canvas.addEventListener('click', (event) => {
+            // Calculate click position relative to canvas
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+
+            // Check if click is inside the square
+            if (mouseX >= x && mouseX <= x + squareSize &&
+                mouseY >= y && mouseY <= y + squareSize) {
+                score++;
+                scoreDisplay.innerText = score;
+                moveSquare(); // Move after successful click
+            }
+        });
+
+        // Initial draw
+        drawGame();
+    </script>
+</body>
+</html>
