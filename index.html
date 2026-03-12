@@ -2,64 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Simple Click Game</title>
-    <style>
-        body { text-align: center; font-family: Arial, sans-serif; }
-        canvas {
-            background-color: #f0f0f0;
-            border: 2px solid #333;
-            cursor: pointer;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guesser Game</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Score: <span id="score">0</span></h1>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div class="container">
+        <h1>Guess the Number!</h1>
+        <p>I have picked a number between 1 and 100. Can you guess it?</p>
+        <input type="number" id="guessInput" min="1" max="100">
+        <button onclick="checkGuess()">Submit Guess</button>
+        <p id="message"></p>
+        <p>Guesses remaining: <span id="guessesLeft">10</span></p>
+    </div>
+    <script>const secretNumber = Math.floor(Math.random() * 100) + 1;
+let guessesLeft = 10;
+const message = document.getElementById('message');
+const guessesLeftEl = document.getElementById('guessesLeft');
+const guessInput = document.getElementById('guessInput');
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreDisplay = document.getElementById('score');
+function checkGuess() {
+    const userGuess = parseInt(guessInput.value);
 
-        let score = 0;
-        let squareSize = 40;
-        // Initial position
-        let x = 180;
-        let y = 180;
+    if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
+        message.textContent = "Please enter a valid number between 1 and 100.";
+        return;
+    }
 
-        function drawGame() {
-            // Clear canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+    guessesLeft--;
+    guessesLeftEl.textContent = guessesLeft;
 
-            // Draw red square
-            ctx.fillStyle = 'red';
-            ctx.fillRect(x, y, squareSize, squareSize);
-        }
+    if (userGuess === secretNumber) {
+        message.textContent = "Congratulations! You guessed the correct number!";
+        message.style.color = "green";
+        gameOver();
+    } else if (guessesLeft === 0) {
+        message.textContent = `Game Over! The secret number was ${secretNumber}.`;
+        message.style.color = "red";
+        gameOver();
+    } else if (userGuess < secretNumber) {
+        message.textContent = "Too low! Try again.";
+        message.style.color = "orange";
+    } else {
+        message.textContent = "Too high! Try again.";
+        message.style.color = "orange";
+    }
+    guessInput.value = '';
+}
 
-        function moveSquare() {
-            // Randomly pick new spot within boundaries
-            x = Math.random() * (canvas.width - squareSize);
-            y = Math.random() * (canvas.height - squareSize);
-            drawGame();
-        }
-
-        canvas.addEventListener('click', (event) => {
-            // Calculate click position relative to canvas
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = event.clientX - rect.left;
-            const mouseY = event.clientY - rect.top;
-
-            // Check if click is inside the square
-            if (mouseX >= x && mouseX <= x + squareSize &&
-                mouseY >= y && mouseY <= y + squareSize) {
-                score++;
-                scoreDisplay.innerText = score;
-                moveSquare(); // Move after successful click
-            }
-        });
-
-        // Initial draw
-        drawGame();
-    </script>
+function gameOver() {
+    document.querySelector('button').disabled = true;
+    guessInput.disabled = true;
+}</script>
 </body>
 </html>
